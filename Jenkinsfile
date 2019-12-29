@@ -1,72 +1,46 @@
 //@Library('Utilities') _
 import groovy.json.JsonSlurper
 import hudson.model.*
-def BuildVersion
-def Current_version
-def NextVersion
+def Current_API_version
+def Current_WEB_version
 def dev_rep_docker = 'gadigamburg/finalproject'
 def colons = ':'
-def module = 'intapi'
+def module = 'intdeploy'
 def underscore = '_'
 
 pipeline {
     options {
         timeout(time: 30, unit: 'MINUTES')
     }
-    agent { label 'slave' }
+    agent { label 'master' }
     stages {
          stage('Checkout') {
              steps {
                  script {
-                     node('master'){
-                         dir('Release') {
-                             deleteDir()
-                             checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/Release.git"]]])
-                             println("Test")
-                             path_json_file = sh(script: "pwd", returnStdout: true).trim() + '/' + 'release' + '.json'
-                             println("path_json_file: $path_json_file")
-                             Current_version = Return_Json_From_File("$path_json_file").release.services.intapi.version
-                             println("Current_version: $Current_version")
-                         }
-                     }
-                     dir('INT_API') {
+                     dir('Release') {
                          deleteDir()
-                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/INT_API.git"]]])
-                         Commit_Id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                         BuildVersion = Current_version + '_' + Commit_Id
-                         println("BuildVersion: $BuildVersion")
-                         last_digit_current_version = sh(script: "echo $Current_version | cut -d'.' -f3", returnStdout: true).trim()
-                         NextVersion = sh(script: "echo $Current_version | cut -d. -f1", returnStdout: true).trim() + '.' + sh(script: "echo $Current_version |cut -d'.' -f2", returnStdout: true).trim() + '.' + (Integer.parseInt(last_digit_current_version) + 1)
-                         println("Checking the build version: $BuildVersion")
+                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/Release.git"]]])
+                         println("Test")
+                         path_json_file = sh(script: "pwd", returnStdout: true).trim() + '/' + 'release' + '.json'
+                         println("path_json_file: $path_json_file")
+                         Current_API_version = Return_Json_From_File("$path_json_file").release.services.intapi.version
+                         Current_WEB_version = Return_Json_From_File("$path_json_file").release.services.intweb.version
+                         println("Current_API_version: $Current_API_version")
+                         println("Current_WEB_version: $Current_WEB_version")
+                     }
+                     dir('INT_DEPLOY') {
+                         deleteDir()
+                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/INT-API-WEB-DEPLOY.git"]]])
                      }
                  }
              }
          }
          stage('UT') {
              steps {
-                 println('UT will be added soon GADI')
+                 println('UT will be added soon...')
              }
          }
-         stage('Build') {
-             steps {
-                 script {
-                     dir('INT_API') {
-                         try {
-
-                           docker.build("$module$colons$BuildVersion")
-                           println("The build image is successfully")  
-
-                         }
-                         catch (exception) {
-                             println "The image build is failed"
-                             currentBuild.result = 'FAILURE'
-                             throw exception
-                         }
-                     }
-                 }
-             }
-         }
-         stage('Push image to repository'){
+         stage('Deploy Services on K8S'){
              steps{
                  script{
                      try{
@@ -79,22 +53,16 @@ pipeline {
                          }
                      }
                      catch (exception){
-                         println "Pushing image to DockerHub failed"
+                         println "Deployment Process Failed!!!"
                          currentBuild.result = 'FAILURE'
                          throw exception
                      }
                  }
              }
          }
-         stage('Push tag version to repository'){
-             steps{
-                 script{
-                    println('Tag version will be added soon')
-                 }
-             }
-         }
     }
 }
+
 def Return_Json_From_File(file_name){
     return new JsonSlurper().parse(new File(file_name))
 }
