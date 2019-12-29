@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api&web
+spec:
+  selector:
+    matchLabels:
+      run: api&web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: api&web
+    spec:
+      containers:
+        - name: API
+          image: index.docker.io/gadigamburg/finalproject:intapi_1.0.0_13e7467
+          imagePullPolicy: Always
+          command: [ "echo", "API SUCCESS" ]
+          ports:
+            - containerPort: 3000
+
+        - name: WEB
+          image: index.docker.io/gadigamburg/finalproject:intweb_1.0.0_8a4f6b0
+          imagePullPolicy: Always
+          command: [ "echo", "WEB SUCCESS" ]
+          ports:
+            - containerPort: 5000
+
+        - name: DB
+          image: index.docker.io/mongo
+          imagePullPolicy: Always
+          command: [ "echo", "DB SUCCESS" ]
+          ports:
+            - containerPort: 27017
+
