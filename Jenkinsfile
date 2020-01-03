@@ -45,8 +45,8 @@ pipeline {
              steps{
                  script{
                      dir('INT_API+WEB-CD'){
-                         sh "sed -i 's/{{API_Version}}/$Current_API_version/' Deploy.yaml"
-                         sh "sed -i 's/{{WEB_Version}}/$Current_WEB_version/' Deploy.yaml"
+                         sh "sed -i 's/{{API_Version}}/$Current_API_version/' Deploy.yml"
+                         sh "sed -i 's/{{WEB_Version}}/$Current_WEB_version/' Deploy.yml"
                          sh """
                             export PATH=/bin/bash:$PATH
                             export KUBECONFIG=/var/jenkins_home/admin.conf
