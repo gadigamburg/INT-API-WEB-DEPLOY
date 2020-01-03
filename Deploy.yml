@@ -1,16 +1,16 @@
 apiVersion: FinalProject/v1
 kind: Deployment
 metadata:
-  name: api&web
+  name: api-web
 spec:
   selector:
     matchLabels:
-      app: api&web
+      app: api-web
   replicas: 1
   template:
     metadata:
       labels:
-        app: api&web
+        app: api-web
     spec:
       containers:
         - name: API
