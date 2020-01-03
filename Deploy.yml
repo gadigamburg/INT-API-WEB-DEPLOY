@@ -1,16 +1,16 @@
-apiVersion: apps/v1
+apiVersion: FinalProject/v1
 kind: Deployment
 metadata:
   name: api&web
 spec:
   selector:
     matchLabels:
-      run: api&web
+      app: api&web
   replicas: 1
   template:
     metadata:
       labels:
-        run: api&web
+        app: api&web
     spec:
       containers:
         - name: API
@@ -19,6 +19,10 @@ spec:
           command: [ "echo", "API SUCCESS" ]
           ports:
             - containerPort: 3000
+          readinessProbe:
+              httpGet:
+                path: /
+                port: 3000
 
         - name: WEB
           image: index.docker.io/gadigamburg/finalproject:intweb_{{WEB_Version}}
