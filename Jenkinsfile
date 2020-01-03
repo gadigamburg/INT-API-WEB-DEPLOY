@@ -20,7 +20,7 @@ pipeline {
                  script {
                      dir('Release') {
                          deleteDir()
-                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/Release.git"]]])
+                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'GadiGamburg_GIT', url: "https://github.com/gadigamburg/Release.git"]]])
                          println("Test")
                          path_json_file = sh(script: "pwd", returnStdout: true).trim() + '/' + 'release' + '.json'
                          println("path_json_file: $path_json_file")
@@ -31,7 +31,7 @@ pipeline {
                      }
                      dir('INT_API+WEB-CD') {
                          deleteDir()
-                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/INT-API-WEB-DEPLOY.git"]]])
+                         checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'GadiGamburg_GIT', url: "https://github.com/gadigamburg/INT-API-WEB-DEPLOY.git"]]])
                      }
                  }
              }
