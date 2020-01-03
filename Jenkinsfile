@@ -29,7 +29,7 @@ pipeline {
                          println("Current_API_version: $Current_API_version")
                          println("Current_WEB_version: $Current_WEB_version")
                      }
-                     dir('INT_DEPLOY') {
+                     dir('INT_API+WEB-CD') {
                          deleteDir()
                          checkout([$class: 'GitSCM', branches: [[name: 'gadi']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'INT_API', url: "https://github.com/gadigamburg/INT-API-WEB-DEPLOY.git"]]])
                      }
@@ -44,7 +44,7 @@ pipeline {
          stage('Deployment with Kubernetes'){
              steps{
                  script{
-                     dir('Release'){
+                     dir('INT_API+WEB-CD'){
                          sh "sed -i 's/{{API_Version}}/$Current_API_version/' Deploy.yaml"
                          sh "sed -i 's/{{WEB_Version}}/$Current_WEB_version/' Deploy.yaml"
                          sh """
