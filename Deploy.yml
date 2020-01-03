@@ -14,14 +14,14 @@ spec:
     spec:
       containers:
         - name: API
-          image: index.docker.io/gadigamburg/finalproject:intapi_1.0.0_13e7467
+          image: index.docker.io/gadigamburg/finalproject:intapi_{{API_Version}}
           imagePullPolicy: Always
           command: [ "echo", "API SUCCESS" ]
           ports:
             - containerPort: 3000
 
         - name: WEB
-          image: index.docker.io/gadigamburg/finalproject:intweb_1.0.0_8a4f6b0
+          image: index.docker.io/gadigamburg/finalproject:intweb_{{WEB_Version}}
           imagePullPolicy: Always
           command: [ "echo", "WEB SUCCESS" ]
           ports:

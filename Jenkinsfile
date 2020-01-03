@@ -4,6 +4,7 @@ import hudson.model.*
 def Current_API_version
 def Current_WEB_version
 def dev_rep_docker = 'gadigamburg/finalproject'
+def deployment_name = 'api&web'
 def colons = ':'
 def module = 'intdeploy'
 def underscore = '_'
@@ -40,22 +41,22 @@ pipeline {
                  println('UT will be added soon...')
              }
          }
-         stage('Deploy Services on K8S'){
+         stage('Deployment with Kubernetes'){
              steps{
                  script{
-                     try{
-                         withCredentials([usernamePassword(credentialsId: 'docker_hub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                            println("DockerUser: ${DOCKER_USERNAME}")
-                            println("DockerPass: ${DOCKER_PASSWORD}")
-                            sh "docker login -u=${DOCKER_USERNAME} -p=${DOCKER_PASSWORD}"
-                            sh "docker tag $module$colons$BuildVersion $dev_rep_docker$colons$module$underscore$BuildVersion"
-                            sh "docker push $dev_rep_docker$colons$module$underscore$BuildVersion"
-                         }
-                     }
-                     catch (exception){
-                         println "Deployment Process Failed!!!"
-                         currentBuild.result = 'FAILURE'
-                         throw exception
+                     dir('Release'){
+                         sh "sed -i 's/{{API_Version}}/$Current_API_version/' Deploy.yaml"
+                         sh "sed -i 's/{{WEB_Version}}/$Current_WEB_version/' Deploy.yaml"
+                         sh """
+                            export PATH=/bin/bash:$PATH
+                            export KUBECONFIG=/var/jenkins_home/admin.conf
+                            kubectl apply -f Deploy.yaml
+                            kubectl patch deployment $deployment_name -p '{"spec":{"progressDeadlineSeconds":15}}'
+                            if ! kubectl rollout status deployment $deployment_name;
+                                then
+                                    kubectl rollout undo deployment $deployment_name
+                            fi
+                         """
                      }
                  }
              }
