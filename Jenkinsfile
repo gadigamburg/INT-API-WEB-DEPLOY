@@ -47,16 +47,17 @@ pipeline {
                      dir('INT_API+WEB-CD'){
                          sh "sed -i 's/{{API_Version}}/$Current_API_version/' Deploy.yml"
                          sh "sed -i 's/{{WEB_Version}}/$Current_WEB_version/' Deploy.yml"
+                         /*
                          sh """
                             export PATH=/bin/bash:$PATH
                             export KUBECONFIG=/var/jenkins_home/admin.conf
-                            //kubectl apply -f Deploy.yaml
-                            //kubectl patch deployment $deployment_name -p '{"spec":{"progressDeadlineSeconds":15}}'
-                            //if ! kubectl rollout status deployment $deployment_name;
-                            //    then
-                            //        kubectl rollout undo deployment $deployment_name
-                            //fi
+                            kubectl apply -f Deploy.yml
+                            kubectl patch deployment $deployment_name -p '{"spec":{"progressDeadlineSeconds":15}}'
+                            if ! kubectl rollout status deployment $deployment_name; then
+                                    kubectl rollout undo deployment $deployment_name
+                            fi
                          """
+                         */
                      }
                  }
              }
