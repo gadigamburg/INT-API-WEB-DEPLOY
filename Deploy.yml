@@ -13,6 +13,13 @@ spec:
         app: api-web
     spec:
       containers:
+        - name: db
+          image: index.docker.io/mongo
+          imagePullPolicy: Always
+          command: [ "echo", "DB SUCCESS" ]
+          ports:
+            - containerPort: 27017
+
         - name: api
           image: index.docker.io/gadigamburg/finalproject:intapi_{{API_Version}}
           imagePullPolicy: Always
@@ -30,11 +37,3 @@ spec:
           command: [ "echo", "WEB SUCCESS" ]
           ports:
             - containerPort: 5000
-
-        - name: db
-          image: index.docker.io/mongo
-          imagePullPolicy: Always
-          command: [ "echo", "DB SUCCESS" ]
-          ports:
-            - containerPort: 27017
-
