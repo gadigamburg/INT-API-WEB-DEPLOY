@@ -1,4 +1,4 @@
-apiVersion: FinalProject/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-web
@@ -13,7 +13,7 @@ spec:
         app: api-web
     spec:
       containers:
-        - name: API
+        - name: api
           image: index.docker.io/gadigamburg/finalproject:intapi_{{API_Version}}
           imagePullPolicy: Always
           command: [ "echo", "API SUCCESS" ]
@@ -24,14 +24,14 @@ spec:
                 path: /
                 port: 3000
 
-        - name: WEB
+        - name: web
           image: index.docker.io/gadigamburg/finalproject:intweb_{{WEB_Version}}
           imagePullPolicy: Always
           command: [ "echo", "WEB SUCCESS" ]
           ports:
             - containerPort: 5000
 
-        - name: DB
+        - name: db
           image: index.docker.io/mongo
           imagePullPolicy: Always
           command: [ "echo", "DB SUCCESS" ]
